@@ -1,0 +1,27 @@
+<!--Este será el contenido de la página que mostrará los botones-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Cámaras en Tiempo Real</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h1>Monitoreo de Cámaras</h1>
+    <div id="buttons">
+        <button id="cam1" onclick="toggleCamera(0)">Cámara 1</button>
+        <button id="cam2" onclick="toggleCamera(1)">Cámara 2</button>
+        <button id="cam3" onclick="toggleCamera(2)">Cámara 3</button>
+        <button id="cam4" onclick="toggleCamera(3)">Cámara 4</button>
+        <button id="cam5" onclick="toggleCamera(4)">Cámara 5</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
+
+
+
+<!--PROCFILE    ste archivo le dice a Heroku cómo iniciar tu aplicación. Sin él, Heroku no sabría qué comando ejecutar para iniciar tu servidor.-->
