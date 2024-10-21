@@ -1,17 +1,28 @@
-//Este código manejará el comportamiento de los botones y se comunicará con el servidor
+// Este código manejará el comportamiento de los botones y se comunicará con el servidor
 
 const socket = io();
 
-let camerasState = [false, false, false, false, false]; // Estado inicial de las cámaras
+// Cargar el estado inicial desde el Local Storage
+let camerasState = JSON.parse(localStorage.getItem('camerasState')) || [false, false, false, false, false];
+
+// Actualizar los botones al cargar
+updateButtons();
 
 // Función para cambiar el estado de una cámara
 function toggleCamera(camIndex) {
-    socket.emit('toggleCamera', camIndex); // Notificar al servidor que se cambió el estado de una cámara
+    // Cambia el estado localmente
+    camerasState[camIndex] = !camerasState[camIndex];
+    // Guarda el nuevo estado en el Local Storage
+    localStorage.setItem('camerasState', JSON.stringify(camerasState));
+    // Notificar al servidor que se cambió el estado de una cámara
+    socket.emit('toggleCamera', camIndex);
 }
 
 // Actualizar la interfaz cuando recibimos el estado actualizado del servidor
 socket.on('stateUpdate', (state) => {
     camerasState = state;
+    // Actualiza el Local Storage con el nuevo estado
+    localStorage.setItem('camerasState', JSON.stringify(camerasState));
     updateButtons();
 });
 
