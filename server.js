@@ -1,12 +1,12 @@
 /* Servidor que manejará la comunicación en tiempo real. 
-Se tiene que llamar server.js por defecto porque asi lo busca Node.js*/
+Se tiene que llamar server.js por defecto porque así lo busca Node.js*/
 
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); // Usar el servidor HTTP
 const io = socketIo(server);
 
 let camerasState = [false, false, false, false, false]; // Estado de las cámaras
@@ -32,8 +32,8 @@ io.on('connection', (socket) => {
     });
 });
 
-//Esto significa que tu aplicación escuchará en el puerto que Heroku le asigne o, si no está en Heroku, en el puerto 3000.
+// Esto significa que tu aplicación escuchará en el puerto que Heroku le asigne o, si no está en Heroku, en el puerto 3000.
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+server.listen(PORT, () => { // Cambiar app.listen a server.listen
+    console.log(`Server is running on port ${PORT}`);
 });
