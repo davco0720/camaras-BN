@@ -1,39 +1,45 @@
-/* Servidor que manejará la comunicación en tiempo real. 
-Se tiene que llamar server.js por defecto porque así lo busca Node.js*/
+// Este código manejará el comportamiento de los botones y se comunicará con el servidor
 
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+const socket = io();
 
-const app = express();
-const server = http.createServer(app); // Usar el servidor HTTP
-const io = socketIo(server);
+// Cargar el estado inicial desde el Local Storage
+let camerasState = JSON.parse(localStorage.getItem('camerasState')) || [false, false, false, false, false];
 
-let camerasState = [false, false, false, false, false]; // Estado de las cámaras
+// Actualizar los botones al cargar
+updateButtons();
 
-app.use(express.static('public')); // Sirve el contenido estático (HTML, CSS, JS)
+// Función para cambiar el estado de una cámara
+function toggleCamera(camIndex) {
+    // Desactivar todas las cámaras
+    for (let i = 0; i < camerasState.length; i++) {
+        camerasState[i] = false;
+    }
 
-io.on('connection', (socket) => {
-    console.log('Nuevo cliente conectado');
+    // Activar solo la cámara seleccionada
+    camerasState[camIndex] = true;
 
-    // Enviar el estado inicial de las cámaras al cliente recién conectado
-    socket.emit('stateUpdate', camerasState);
+    // Guarda el nuevo estado en el Local Storage
+    localStorage.setItem('camerasState', JSON.stringify(camerasState));
+    // Notificar al servidor que se cambió el estado de una cámara
+    socket.emit('toggleCamera', camIndex);
+}
 
-    // Escuchar cuando un cliente cambia el estado de una cámara
-    socket.on('toggleCamera', (camIndex) => {
-        camerasState[camIndex] = !camerasState[camIndex]; // Cambiar el estado de la cámara
-
-        // Enviar la actualización a todos los clientes
-        io.emit('stateUpdate', camerasState);
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Cliente desconectado');
-    });
+// Actualizar la interfaz cuando recibimos el estado actualizado del servidor
+socket.on('stateUpdate', (state) => {
+    camerasState = state;
+    // Actualiza el Local Storage con el nuevo estado
+    localStorage.setItem('camerasState', JSON.stringify(camerasState));
+    updateButtons();
 });
 
-// Esto significa que tu aplicación escuchará en el puerto que Heroku le asigne o, si no está en Heroku, en el puerto 3000.
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => { // Cambiar app.listen a server.listen
-    console.log(`Server is running on port ${PORT}`);
-});
+// Función para actualizar los botones en función del estado de las cámaras
+function updateButtons() {
+    for (let i = 0; i < camerasState.length; i++) {
+        const button = document.getElementById(`cam${i + 1}`);
+        if (camerasState[i]) {
+            button.style.backgroundColor = 'red'; // Activa
+        } else {
+            button.style.backgroundColor = '#4CAF50'; // Inactiva
+        }
+    }
+}
